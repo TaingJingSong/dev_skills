@@ -1,0 +1,7 @@
+interface:
+  display_name: "FastAPI Core Structure"
+  short_description: "Generate adaptive FastAPI core scaffolding"
+  default_prompt: "Use $fastapi-generate-core-structure to inspect this FastAPI project and scaffold the minimal core structure for my requested feature."
+
+policy:
+  allow_implicit_invocation: true

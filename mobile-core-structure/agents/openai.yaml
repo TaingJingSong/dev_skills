@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Core Structure"
+  short_description: "Generate architecture-aligned mobile feature skeletons"
+  default_prompt: "Use $mobile-core-structure to inspect this mobile project and scaffold only the core structure for the requested feature."

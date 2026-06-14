@@ -1,0 +1,18 @@
+{
+  "recipient_display": "bong @PHYNY_NAN",
+  "week_label": "May W3",
+  "project_status": "The project is progressing well with multiple enhancements completed. Most modules are stable, with ongoing feature development and improvements.",
+  "achievements": [
+    "Addressing UAT Feedback (Testing & Fixing) 🟢",
+    "Release Preparation 🟢"
+  ],
+  "next_sprint": [
+    "Migrate to New Backend Core 🔵",
+    "Implement Multi Shift/Roster Shift 🟠"
+  ],
+  "slide_link": "https://docs.google.com/presentation/d/1OMCYqNnhzYtKKN840JgxF5vG0OVSFM3e/edit?slide=id.g3e9e1eee73e_3_109#slide=id.g3e9e1eee73e_3_109",
+  "sender_name": "Taing ChingSong",
+  "images": [
+    "/Users/macbookpro/Desktop/progress.png"
+  ]
+}
