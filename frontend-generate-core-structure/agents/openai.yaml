@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Core Structure"
+  short_description: "Generate architecture-aligned frontend skeletons"
+  default_prompt: "Use $frontend-generate-core-structure to inspect this frontend project and scaffold only the core structure for the requested feature."

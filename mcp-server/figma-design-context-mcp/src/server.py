@@ -1,218 +1,249 @@
-import json
+from typing import Any
+
 from mcp.server.fastmcp import FastMCP
+from pydantic import BaseModel, Field
 
-from figma_url import parse_figma_url
-from figma_client import get_figma_file, get_figma_node
+from company_rules import COMPONENT_HINTS
+from config import load_settings
 from extract_design_context import extract_design_context
-from extract_tokens import extract_design_tokens
 from extract_interactions import extract_interactions
-from company_rules import FLUTTER_COMPONENT_MAP, get_stack_target, get_required_skills, get_rules_for_stack
-from textwrap import dedent
+from extract_tokens import extract_design_tokens
+from figma_client import get_figma_file, get_figma_node
+from figma_url import ParsedFigmaUrl, parse_figma_url
+from prompt_builder import build_design_implementation_prompt
 
-mcp = FastMCP("figma-design-context-mcp")
+
+mcp = FastMCP(
+    "figma-design-context-mcp",
+    instructions=(
+        "Extract bounded, evidence-based Figma context and produce paste-ready "
+        "implementation prompts. Visual context never defines missing API, database, "
+        "permission, or business contracts. Prefer get_design_context for inspection or "
+        "generate_design_based_prompt for a coding prompt; do not call every extraction "
+        "tool for the same URL because design context already includes tokens and interactions."
+    ),
+    json_response=True,
+)
 
 
-async def get_root_node_from_figma_url(figma_url: str) -> dict:
+class DesignContextResult(BaseModel):
+    source: dict[str, str | None]
+    design_context: dict[str, Any]
+    interactions: dict[str, Any]
+    warnings: list[str] = Field(default_factory=list)
+
+
+class DesignPromptResult(BaseModel):
+    prompt: str
+    source: dict[str, str | None]
+    warnings: list[str] = Field(default_factory=list)
+
+
+async def get_root_node_from_figma_url(
+    figma_url: str,
+) -> tuple[ParsedFigmaUrl, dict[str, Any]]:
     parsed = parse_figma_url(figma_url)
 
     if parsed.node_id:
-        node_response = await get_figma_node(parsed.file_key, parsed.node_id)
-        node_data = node_response.get("nodes", {}).get(parsed.node_id, {}).get("document")
-
-        if not node_data:
-            raise ValueError(f"Could not find Figma node: {parsed.node_id}")
-
-        return node_data
+        response = await get_figma_node(parsed.file_key, parsed.node_id)
+        node_data = response.get("nodes", {}).get(parsed.node_id, {}).get("document")
+        if not isinstance(node_data, dict):
+            raise ValueError(f"Figma node was not found: {parsed.node_id}")
+        return parsed, node_data
 
     file_data = await get_figma_file(parsed.file_key)
-    return file_data["document"]
+    document = file_data.get("document")
+    if not isinstance(document, dict):
+        raise ValueError("Figma file response did not contain a document.")
+    return parsed, document
 
 
-@mcp.tool()
+def _source(parsed: ParsedFigmaUrl, root_node: dict) -> dict[str, str | None]:
+    return {
+        "fileKey": parsed.file_key,
+        "nodeId": parsed.node_id,
+        "nodeName": root_node.get("name"),
+    }
+
+
+def _warnings(design_context: dict, interactions: dict) -> list[str]:
+    warnings = [
+        "Component hints are unverified until matched against the target repository.",
+        "Figma visuals do not define API, database, permission, or business contracts.",
+    ]
+    summary = design_context.get("sourceSummary", {})
+    if any(
+        summary.get(key)
+        for key in (
+            "nodesTruncated",
+            "sectionsTruncated",
+            "textLabelsTruncated",
+            "componentHintsTruncated",
+        )
+    ):
+        warnings.append(
+            "The extracted context was truncated. Use a narrower Figma node for higher fidelity."
+        )
+    if interactions.get("nameBasedHints"):
+        warnings.append(
+            "Name-based interaction hints require confirmation from requirements or prototypes."
+        )
+    return warnings
+
+
+async def _extract(
+    figma_url: str,
+    platform: str,
+    framework: str,
+) -> DesignContextResult:
+    settings = load_settings()
+    parsed, root_node = await get_root_node_from_figma_url(figma_url)
+    design_context = extract_design_context(
+        root_node,
+        platform=platform,
+        framework=framework,
+        max_nodes=settings.max_nodes,
+        max_text_labels=settings.max_text_labels,
+    )
+    interactions = extract_interactions(root_node, max_nodes=settings.max_nodes)
+    return DesignContextResult(
+        source=_source(parsed, root_node),
+        design_context=design_context,
+        interactions=interactions,
+        warnings=_warnings(design_context, interactions),
+    )
+
+
+@mcp.tool(
+    title="Get Figma design context",
+    description=(
+        "Extract bounded layout, text, tokens, component-category hints, and "
+        "interaction evidence from a Figma file or selected node. This comprehensive "
+        "result already includes tokens and interactions."
+    ),
+)
 async def get_design_context(
     figma_url: str,
     platform: str = "mobile",
     framework: str = "flutter",
-) -> str:
-    """
-    Extract implementation-ready design context from a Figma file or selected node.
-    Use this before generating UI code.
-    """
-    root_node = await get_root_node_from_figma_url(figma_url)
-
-    result = extract_design_context(
-        root_node=root_node,
-        platform=platform,
-        framework=framework,
-    )
-
-    return json.dumps(result, indent=2, ensure_ascii=False)
+) -> DesignContextResult:
+    return await _extract(figma_url, platform, framework)
 
 
-@mcp.tool()
-async def get_design_tokens(figma_url: str) -> str:
-    """
-    Extract colors, spacing, radius, and typography candidates from Figma.
-    """
-    root_node = await get_root_node_from_figma_url(figma_url)
-    result = extract_design_tokens(root_node)
-
-    return json.dumps(result, indent=2, ensure_ascii=False)
-
-
-@mcp.tool()
-async def get_screen_interactions(figma_url: str) -> str:
-    """
-    Infer possible UI interactions from Figma node names.
-    """
-    root_node = await get_root_node_from_figma_url(figma_url)
-
-    result = {
-        "screen": root_node.get("name"),
-        "interactions": extract_interactions(root_node),
+@mcp.tool(
+    title="Get Figma design tokens",
+    description="Extract bounded color, spacing, radius, and typography candidates.",
+)
+async def get_design_tokens(figma_url: str) -> dict[str, Any]:
+    settings = load_settings()
+    parsed, root_node = await get_root_node_from_figma_url(figma_url)
+    return {
+        "source": _source(parsed, root_node),
+        "tokens": extract_design_tokens(root_node, max_nodes=settings.max_nodes),
+        "warning": "Prefer verified project design-system tokens over raw Figma values.",
     }
 
-    return json.dumps(result, indent=2, ensure_ascii=False)
+
+@mcp.tool(
+    title="Get Figma interaction evidence",
+    description=(
+        "Return prototype reactions separately from low-confidence node-name hints. "
+        "Use only when interaction evidence is needed without full design context."
+    ),
+)
+async def get_screen_interactions(figma_url: str) -> dict[str, Any]:
+    settings = load_settings()
+    parsed, root_node = await get_root_node_from_figma_url(figma_url)
+    return {
+        "source": _source(parsed, root_node),
+        "interactions": extract_interactions(root_node, max_nodes=settings.max_nodes),
+    }
 
 
-@mcp.tool()
-async def map_figma_to_project_components() -> str:
-    """
-    Return company Flutter component mappings.
-    """
-    result = {
-        "framework": "flutter",
-        "componentMap": FLUTTER_COMPONENT_MAP,
+@mcp.tool(
+    title="Get component mapping guidance",
+    description=(
+        "Return generic component-category hints that must be verified in the target project."
+    ),
+)
+async def map_figma_to_project_components() -> dict[str, Any]:
+    return {
+        "componentHints": COMPONENT_HINTS,
         "rules": [
-            "Prefer mapped project components over creating new widgets.",
-            "If no component mapping exists, return TODO instead of inventing a shared component.",
+            "Treat mappings as categories, not real project component names.",
+            "Verify the target repository before selecting or creating a component.",
+            "Prefer a local component until shared reuse is demonstrated.",
         ],
     }
 
-    return json.dumps(result, indent=2, ensure_ascii=False)
 
-
-@mcp.tool()
+@mcp.tool(
+    title="Generate design implementation prompt",
+    description=(
+        "Generate a paste-ready coding-agent prompt from Figma context and optional "
+        "project, API, and business references. This tool does not generate code."
+    ),
+)
 async def generate_design_based_prompt(
     figma_url: str,
     task: str,
-    target_stack: str = "mobile",  # mobile | backend | frontend | fullstack
+    target_stack: str = "mobile",
     project_root: str | None = None,
     existing_code_path: str | None = None,
     api_contract: str | None = None,
     business_rules: str | None = None,
     skill_names: list[str] | None = None,
-):
-    """
-    Generate one skill-aware coding-agent prompt from Figma design context,
-    project references, and company implementation rules.
-    This does not generate code.
-    """
+) -> DesignPromptResult:
+    settings = load_settings()
+    stack = {
+        "mobile": ("mobile", "flutter"),
+        "backend": ("backend", "fastapi"),
+        "frontend": ("web", "frontend"),
+        "fullstack": ("fullstack", "mixed"),
+    }
+    if target_stack not in stack:
+        raise ValueError(
+            "Unsupported target_stack. Expected mobile, backend, frontend, or fullstack."
+        )
 
-    stack_target = get_stack_target(target_stack)
-    platform = stack_target["platform"]
-    framework = stack_target["framework"]
-
-    required_skills = get_required_skills(target_stack, skill_names)
-    implementation_rules = get_rules_for_stack(target_stack)
-
-    root_node = await get_root_node_from_figma_url(figma_url)
-
-    design_context = extract_design_context(
-        root_node=root_node,
-        platform=platform,
-        framework=framework,
+    extracted = await _extract(figma_url, *stack[target_stack])
+    prompt = build_design_implementation_prompt(
+        figma_url=figma_url,
+        task=task,
+        target_stack=target_stack,
+        design_context=extracted.design_context,
+        interactions=extracted.interactions,
+        max_input_chars=settings.max_prompt_input_chars,
+        project_root=project_root,
+        existing_code_path=existing_code_path,
+        api_contract=api_contract,
+        business_rules=business_rules,
+        skill_names=skill_names,
+    )
+    return DesignPromptResult(
+        prompt=prompt,
+        source=extracted.source,
+        warnings=extracted.warnings,
     )
 
-    interactions = extract_interactions(root_node)
 
-    prompt = dedent(f"""
-    You are an AI coding agent working inside an existing company project.
+@mcp.prompt(
+    name="design_from_figma",
+    title="Design from Figma context",
+    description="Create a paste-ready implementation prompt from a Figma URL and task.",
+)
+async def design_from_figma(
+    figma_url: str,
+    task: str,
+    target_stack: str = "mobile",
+) -> str:
+    result = await generate_design_based_prompt(
+        figma_url=figma_url,
+        task=task,
+        target_stack=target_stack,
+    )
+    return result.prompt
 
-    Your job is to implement the requested task using the provided Figma design context, existing project architecture, and available skills.
-
-    ## Task
-
-    {task}
-
-    ## Target
-
-    - Target stack: {target_stack}
-    - Platform: {platform}
-    - Framework: {framework}
-    {f"- Project root: {project_root}" if project_root else "- Project root: Use the current workspace root."}
-    {f"- Existing code reference: {existing_code_path}" if existing_code_path else "- Existing code reference: Inspect the project and identify the closest existing module."}
-
-    ## Required Skills
-
-    Before implementing, load and follow these skills if available:
-
-    {chr(10).join(f"- {skill}" for skill in required_skills)}
-
-    If any listed skill does not exist, do not stop. Continue by inspecting the current project and following discovered patterns.
-
-    ## Mandatory Project Discovery
-
-    Before editing files:
-
-    1. Inspect the current project structure.
-    2. Identify existing architecture patterns.
-    3. Identify existing reusable widgets/components.
-    4. Identify existing routing/navigation patterns.
-    5. Identify existing model, repository, service, API, and state-management patterns.
-    6. Verify whether suggested components exist before using them.
-    7. Do not invent imports, components, models, API fields, or folder names.
-
-    ## Figma Design Context
-
-    {json.dumps(design_context, indent=2, ensure_ascii=False)}
-
-    ## Inferred Interactions
-
-    {json.dumps(interactions, indent=2, ensure_ascii=False)}
-
-    ## API Contract
-
-    {api_contract or "No API contract was provided. Inspect existing API/model/repository patterns. Do not invent request or response fields. Add TODO placeholders where API details are missing."}
-
-    ## Business Rules
-
-    {business_rules or "No business rules were provided. Do not invent approval, permission, validation, calculation, or workflow rules. Add TODOs where business behavior is unclear."}
-
-    ## Implementation Rules
-
-    {chr(10).join(f"- {rule}" for rule in implementation_rules)}
-
-    ## Design Usage Rules
-
-    - Treat Figma MCP component suggestions as hints only.
-    - Verify all reusable components from the actual project before using them.
-    - If a Figma section maps to no existing component, create a local private widget/component for this screen first.
-    - Use design tokens as guidance, but prefer existing theme/design-system tokens if available.
-    - Keep layout responsive and avoid fixed heights unless required.
-    - Split repeated sections into small widgets/components.
-
-    ## Required Output
-
-    1. Summary of inspected files.
-    2. Detected architecture and reusable patterns.
-    3. Files created or modified.
-    4. Implementation summary.
-    5. Loading, empty, error, and success-state handling.
-    6. TODOs for missing API contracts or business rules.
-    7. Validation steps.
-
-    ## Restrictions
-
-    - Do not blindly use CustomButton, CustomCard, CoreView, CRUDAPI, or any named project component unless verified in the project.
-    - Do not invent API request/response fields.
-    - Do not bypass existing architecture.
-    - Do not hardcode user-facing labels if localization exists.
-    - Do not create duplicate shared widgets/components.
-    - Do not modify unrelated files.
-    """).strip()
-
-    return prompt
 
 if __name__ == "__main__":
     mcp.run()
