@@ -1,9 +1,9 @@
 ---
-name: generate-contract-snapshot
+name: capture-implemented-feature
 description: Capture what a backend feature actually shipped — not what was planned — as a single grounded handoff file for frontend/mobile implementation. Use after a backend task is implemented (not before), when frontend or mobile work needs to consume the result. Reads the real implemented code (models, schemas, routes, validation) rather than the original implementation prompt, since plans drift during implementation. Output feeds directly into generate-implementation-prompt's Source References for the next platform.
 ---
 
-# Generate Contract Snapshot
+# Capture Implemented Feature
 
 Produce one grounded handoff file documenting what a backend feature actually built, so a frontend or mobile implementation prompt can be generated against reality instead of a stale plan or guesswork.
 
