@@ -1,0 +1,4 @@
+interface:
+  display_name: "Get Implemented Feature"
+  short_description: "Capture lightweight backend contracts"
+  default_prompt: "Use $get-implemented-feature to capture a concise backend contract snapshot for this implemented feature."
