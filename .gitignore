@@ -1,6 +1,6 @@
 venv/*
 mcp-server/*
 credentials.json
-capture-implemented-feature/*
-company-engineering-standard/*
-generate-implementation-prompt/*
+skills/capture-implemented-feature/*
+skills/company-engineering-standard/*
+skills/generate-implementation-prompt/*
