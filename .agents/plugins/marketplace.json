@@ -1,14 +1,14 @@
 {
   "name": "innotech-dev",
   "interface": {
-    "displayName": "Innotech Plugin"
+    "displayName": "Innotech Plugin Marketplace"
   },
   "plugins": [
     {
-      "name": "innotech-plugin",
+      "name": "innotech-dev-plugin",
       "source": {
         "source": "url",
-        "url": "https://github.com/TaingJingSong/dev_skills", 
+        "url": "https://github.com/TaingJingSong/dev_skills",
         "ref": "main"
       },
       "policy": {
