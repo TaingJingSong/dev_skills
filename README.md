@@ -2,6 +2,6 @@
 
 ## Codex
 ```sh
-codex plugin marketplace add DietrichGebert/ponytail
+codex plugin marketplace add TaingJingSong/dev_skills
 codex
 ```
