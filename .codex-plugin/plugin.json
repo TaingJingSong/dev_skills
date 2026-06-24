@@ -1,0 +1,24 @@
+{
+  "name": "innotech-dev-plugin",
+  "version": "0.1.0",
+  "description": "Innotech Dev Plugin plugin",
+  "author": {
+    "name": "Local developer", 
+    "url": "https://github.com/TaingJingSong"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "InnoTech Dev Plugin",
+    "shortDescription": "Use local InnoTech development skills in Codex.",
+    "longDescription": "InnoTech Dev Plugin provides a local plugin container for InnoTech development workflows and reusable Codex skills.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Core Framework Structure Backend", 
+      "Core Framework Structure Frontend", 
+      "Core Framework Structure Mobile"
+    ],
+    "defaultPrompt": "Help me use Innotech Dev Plugin.",
+    "websiteURL": "https://github.com/TaingJingSong/dev_skills"
+  }
+}
