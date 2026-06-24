@@ -1,0 +1,21 @@
+{
+  "name": "innotech-dev",
+  "interface": {
+    "displayName": "Innotech Plugin"
+  },
+  "plugins": [
+    {
+      "name": "innotech-plugin",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/TaingJingSong/dev_skills", 
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    }
+  ]
+}
