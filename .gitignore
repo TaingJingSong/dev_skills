@@ -1,2 +1,4 @@
 venv/*
-mcp-server/*
+company-engineering-standard/*
+capture-implemented-feature/*
+generate-implementation-prompt/*
