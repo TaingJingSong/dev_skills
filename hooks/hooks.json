@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 hooks/security-prompt-guard.py",
+            "command": "python3 ~/.codex/hooks/security-prompt-guard.py",
             "timeout": 10
           }
         ]
