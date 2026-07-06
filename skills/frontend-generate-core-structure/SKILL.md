@@ -1,5 +1,5 @@
 ---
-name: nuxt-generate-core-structure
+name: frontend-generate-core-structure
 description: >
   Generates minimal, architecture-aligned Nuxt 3 + Vuetify frontend structure
   by inspecting the repository before editing. Use when the user asks to

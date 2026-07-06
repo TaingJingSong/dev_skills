@@ -6,7 +6,7 @@ When an existing repo is present, always prefer what inspection reveals.
 ## Project-level layout
 
 ```
-talentedge-frontend/
+<project-name>/
 ├── locales/
 │   ├── en.json               # English i18n keys
 │   └── km.json               # Khmer i18n keys
