@@ -1,0 +1,6 @@
+venv/*
+mcp-server/*
+credentials.json
+skills/capture-implemented-feature/*
+skills/company-engineering-standard/*
+skills/generate-implementation-prompt/*

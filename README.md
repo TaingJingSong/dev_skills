@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # InnoTech Agent Engineering Skills — v2.1.1 (universal-installation ready)
 
 A **cross-agent, cross-language** collection of reusable engineering workflows. This bundle retains your FastAPI, Nuxt, Flutter, QA, postmortem, implementation prompting, documentation and handoff skills, adds five engineering guardrails, and consolidates all discoverable `SKILL.md` files under `skills/<name>/SKILL.md`.
@@ -215,3 +216,12 @@ For safe promotion, configure a GitHub ruleset protecting `main`: require PRs, a
 Review `RELEASE_CHECKLIST.md` before merging to `main` or tagging a release. Build a local safe ZIP with `python scripts/build_release.py --output /tmp/innotech-agent-skills.zip` and validate with `python scripts/validate_release.py /tmp/innotech-agent-skills.zip`.
 
 Avoid adding real credentials or `.env` files. If secrets were ever committed, rotate/revoke them and consult a repository administrator about historical cleanup; `.gitignore` and safe ZIPs do not remove past exposure.
+=======
+# Installation Guide
+
+## Codex
+```sh
+codex plugin marketplace add TaingJingSong/dev_skills
+codex
+```
+>>>>>>> main
