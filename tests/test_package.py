@@ -128,6 +128,20 @@ class InstallTests(unittest.TestCase):
         self.assertTrue((self.home / ".claude/skills/analyze-edge-cases/SKILL.md").exists())
         self.assertFalse((self.project / "CLAUDE.md").exists())
 
+    def test_rules_only_does_not_install_any_skills(self):
+        installed, skipped = installer.install(ROOT, "all", "project", self.project, self.home, [], False, False, False, True)
+        self.assertEqual((installed, skipped), (4, 0))
+        self.assertFalse((self.project / ".agents/skills").exists())
+        self.assertFalse((self.project / ".claude/skills").exists())
+        for rel in ("AGENTS.md", "CLAUDE.md", "GEMINI.md", ".cursor/rules/innotech-guardrails.mdc"):
+            self.assertTrue((self.project / rel).is_file())
+
+    def test_rules_only_preserves_existing_policy(self):
+        (self.project / "AGENTS.md").write_text("user-specific policy")
+        installed, skipped = installer.install(ROOT, "all", "project", self.project, self.home, [], False, False, False, True)
+        self.assertEqual((installed, skipped), (3, 1))
+        self.assertEqual((self.project / "AGENTS.md").read_text(), "user-specific policy")
+
     def test_unknown_skill_fails(self):
         with self.assertRaisesRegex(ValueError, "Unknown skills"):
             self.invoke(names=["not-a-real-skill"])

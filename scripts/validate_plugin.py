@@ -30,7 +30,7 @@ def check(root: Path) -> list[str]:
     if listing.get('name') != entry.get('name'):
         errors.append('Marketplace plugin name does not match plugin.json')
     source = listing.get('source')
-    if not isinstance(source, dict) or source.get('source') != 'url' or source.get('url') != 'https://github.com/TaingJingSong/dev_skills':
+    if not isinstance(source, dict) or source.get('source') != 'url' or source.get('url') != 'https://github.com/taing-jingsong/dev_skills':
         errors.append('Marketplace source repository changed or is invalid')
     if not isinstance(source, dict) or source.get('ref') != 'main':
         errors.append('Marketplace source must remain main until separately approved')

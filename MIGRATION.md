@@ -42,3 +42,19 @@
 - Restored `.codex-plugin/plugin.json` with the same `name` and `skills: ./skills/` entrypoint. Updated description, capabilities and version to `2.0.0`; this change becomes active only after a reviewed `main` release.
 - Added `.github/workflows/validate-skills.yml`, `.github/CODEOWNERS`, `AGENTS.md`, `scripts/validate_plugin.py`, `scripts/build_release.py`, `scripts/validate_release.py`, `tests/test_marketplace_release.py`, and `RELEASE_CHECKLIST.md`.
 - This distribution is prepared from the previous local v2 source and archived original Git metadata; live `dev` state could not be fetched. Review and resolve any divergence before applying.
+
+
+## v2.1.0 — easier cross-agent installation
+
+- Added `UNIVERSAL_INSTALL.md` and made Vercel's third-party `npx skills add` the recommended cross-agent distribution method once this release reaches `main`. This keeps agent-specific discovery out of our own maintenance burden and preserves the Codex marketplace.
+- Added `--rules-only` to the existing Python installer so an approved project can generate its missing `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and Cursor rules **without reinstalling** skills already managed by `npx skills`. Existing instructions are never overwritten.
+- Expanded tests for `--rules-only`, included the universal guide in the deterministic release ZIP, and updated the plugin version to `2.1.0`.
+- The existing core skills, marketplace identifier, marketplace `main` reference, and script behavior otherwise remain unchanged. No GitHub branch or remote agent has been modified.
+- Caveat: Skills CLI support is documented from its current upstream references, but the CLI was not run in the current build environment because its local Node.js version is below the upstream's stated minimum. Run a real-agent smoke test before promoting `main`.
+
+## v2.1.1 — GitHub account rename
+
+- Updated repository owner references from `TaingJingSong` to `taing-jingsong` across installation guides, marketplace metadata, plugin author/homepage metadata, validation script, and CODEOWNERS.
+- Preserved the `innotech-dev-plugin` plugin ID, `skills/` structure, and `source.ref: main`.
+- Incremented plugin version to `2.1.1`; no skill behavior changed.
+- Confirm the new repository URL and CODEOWNERS user handle work in the live GitHub repository before release.

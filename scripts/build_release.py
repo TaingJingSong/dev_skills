@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT_FILES = {'AGENTS.md', 'README.md', 'MIGRATION.md', 'POLICY.md', 'RELEASE_CHECKLIST.md', '.gitignore', 'requirements.txt', 'requirements-google.txt'}
+ROOT_FILES = {'AGENTS.md', 'README.md', 'MIGRATION.md', 'POLICY.md', 'RELEASE_CHECKLIST.md', 'UNIVERSAL_INSTALL.md', '.gitignore', 'requirements.txt', 'requirements-google.txt'}
 ROOT_DIRS = {'skills', 'scripts', 'templates', 'tests'}
 META_PREFIXES = {'.agents/plugins/', '.codex-plugin/', '.github/workflows/', '.github/CODEOWNERS'}
 BAD_NAMES = {'credentials.json', 'token.json', '.DS_Store', '.env', 'id_rsa', 'id_ed25519'}

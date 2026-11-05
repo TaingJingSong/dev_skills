@@ -25,6 +25,14 @@ class MarketplaceMetadataTests(unittest.TestCase):
     def test_live_package_manifests_consistent(self):
         self.assertEqual(plugin.check(ROOT), [])
 
+    def test_new_github_owner_is_consistent(self):
+        market = json.loads((ROOT / '.agents/plugins/marketplace.json').read_text())
+        plugin_data = json.loads((ROOT / '.codex-plugin/plugin.json').read_text())
+        self.assertEqual(market['plugins'][0]['source']['url'], 'https://github.com/taing-jingsong/dev_skills')
+        self.assertEqual(plugin_data['interface']['websiteURL'], 'https://github.com/taing-jingsong/dev_skills')
+        for rel in ['README.md', 'UNIVERSAL_INSTALL.md', '.github/CODEOWNERS', 'scripts/validate_plugin.py']:
+            self.assertNotIn('TaingJingSong', (ROOT / rel).read_text(), rel)
+
     def test_registered_skill_count(self):
         plugin_data = json.loads((ROOT / '.codex-plugin/plugin.json').read_text())
         self.assertEqual(plugin_data['skills'], './skills/')
@@ -67,6 +75,7 @@ class ReleaseTests(unittest.TestCase):
             with ZipFile(archive) as z:
                 self.assertIn('.agents/plugins/marketplace.json', z.namelist())
                 self.assertIn('.codex-plugin/plugin.json', z.namelist())
+                self.assertIn('UNIVERSAL_INSTALL.md', z.namelist())
                 self.assertFalse(any('/.git/' in x for x in z.namelist()))
 
     def test_releases_are_reproducible(self):
