@@ -1,17 +1,11 @@
 ---
 name: frontend-generate-core-structure
-description: >
-  Generates minimal, architecture-aligned Nuxt 3 + Vuetify frontend structure
-  by inspecting the repository before editing. Use when the user asks to
-  scaffold, add, create, implement, or extend pages, layouts, components,
-  composables, Pinia stores, API calls, route definitions, table views, form
-  definitions, dialog components, filter components, chart components, or any
-  reusable UI pattern. Also use when generating UI from a screenshot, building
-  a feature page with index/create/edit/view/form.ts, adding a shared component
-  under components/ or views/, or extending an existing page. Do not use for
-  Flutter, React Native, or backend tasks.
-compatibility: Designed for Nuxt 3 + Vuetify 3 + TypeScript + Pinia
+description: Extend Nuxt/Vue/Vuetify pages, forms, components and API integration using existing project patterns. Use for Nuxt frontend scaffolding, not unrelated frameworks.
 ---
+
+## Cross-Agent Safety Contract
+
+These instructions are subordinate to the user's explicit scope, repository policy, and higher-priority agent instructions. Before any file write, inspect the actual repository conventions and applicable `AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`. Existing architecture, core logic, public contracts, schemas, security boundaries, dependencies, and directory structure are protected by default. Do not move, rename, replace, or refactor them as a side effect. If the requested task requires a protected change, **stop at that boundary**, explain the blocker and safer alternatives, and request separate explicit approval plus updated scope/policy before continuing. Never silently widen scope. Preserve unrelated work, do not run destructive commands or commits without authorization, and report tests not run. See `../../POLICY.md` when using this bundled distribution; in copied installations, follow the local repository instructions instead.
 
 # Nuxt Generate Core Structure
 

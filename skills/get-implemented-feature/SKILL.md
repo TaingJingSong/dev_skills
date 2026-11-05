@@ -1,7 +1,11 @@
 ---
 name: get-implemented-feature
-description: Quickly capture the actual backend contract from implemented code for frontend/mobile consumption. Use after backend implementation is complete when a lightweight snapshot is enough. Produces a concise note focused on API contract, validation, list behavior, and notable frontend/mobile concerns.
+description: Extract a brief implemented API/validation contract snapshot from existing backend code for frontend/mobile. Use for compact handoffs; use capture-implemented-feature for comprehensive reports.
 ---
+
+## Cross-Agent Safety Contract
+
+These instructions are subordinate to the user's explicit scope, repository policy, and higher-priority agent instructions. Before any file write, inspect the actual repository conventions and applicable `AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`. Existing architecture, core logic, public contracts, schemas, security boundaries, dependencies, and directory structure are protected by default. Do not move, rename, replace, or refactor them as a side effect. If the requested task requires a protected change, **stop at that boundary**, explain the blocker and safer alternatives, and request separate explicit approval plus updated scope/policy before continuing. Never silently widen scope. Preserve unrelated work, do not run destructive commands or commits without authorization, and report tests not run. See `../../POLICY.md` when using this bundled distribution; in copied installations, follow the local repository instructions instead.
 
 # Get Implemented Feature
 

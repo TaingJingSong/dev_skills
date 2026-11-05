@@ -1,16 +1,11 @@
 ---
 name: fastapi-generate-core-structure
-description: >
-  Generates minimal, architecture-aligned FastAPI backend structure by
-  inspecting the repository before editing. Use when the user asks to
-  scaffold, add, create, implement, or extend backend endpoints, modules,
-  schemas, SQLAlchemy models, views, routers, services, dependencies,
-  permissions, integrations, background jobs, reports, or migration
-  placeholders. Also use when registering a new module in register.py,
-  adding Celery tasks, or updating any file under api/app/ or api/mobile/.
-  Do not use for frontend, Flutter, or non-Python tasks.
-compatibility: Designed for FastAPI + SQLAlchemy + Celery + Python 3.11+
+description: Extend FastAPI backends using existing project route, ORM, schema and service patterns. Use for Python/FastAPI feature scaffolding; preserve the current structure.
 ---
+
+## Cross-Agent Safety Contract
+
+These instructions are subordinate to the user's explicit scope, repository policy, and higher-priority agent instructions. Before any file write, inspect the actual repository conventions and applicable `AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`. Existing architecture, core logic, public contracts, schemas, security boundaries, dependencies, and directory structure are protected by default. Do not move, rename, replace, or refactor them as a side effect. If the requested task requires a protected change, **stop at that boundary**, explain the blocker and safer alternatives, and request separate explicit approval plus updated scope/policy before continuing. Never silently widen scope. Preserve unrelated work, do not run destructive commands or commits without authorization, and report tests not run. See `../../POLICY.md` when using this bundled distribution; in copied installations, follow the local repository instructions instead.
 
 # FastAPI Generate Core Structure
 
