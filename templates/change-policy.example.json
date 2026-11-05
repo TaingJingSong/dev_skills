@@ -1,0 +1,17 @@
+{
+  "allowed_paths": [
+    "api/features/new-invoice/**",
+    "tests/features/new-invoice/**"
+  ],
+  "protected_paths": [
+    "api/core/**",
+    "**/auth/**",
+    "**/migrations/**",
+    "**/config/**",
+    "**/package-lock.json",
+    "**/poetry.lock",
+    "**/pubspec.lock"
+  ],
+  "allow_deletions": false,
+  "allow_symlinks": false
+}

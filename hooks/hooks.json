@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"additionalContext\": \"🔒 InnoTech Security Guard is ACTIVE. Sensitive data (API keys, passwords, tokens, IDs) will be automatically redacted or blocked before reaching the AI. Never paste raw credentials into prompts.\"}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.codex/hooks/security-prompt-guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

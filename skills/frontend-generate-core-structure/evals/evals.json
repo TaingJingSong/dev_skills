@@ -1,0 +1,45 @@
+{
+  "skill_name": "fastapi-generate-core-structure",
+  "evals": [
+    {
+      "id": "new-api-structure",
+      "prompt": "Add the core structure for an employee document upload endpoint. Do not implement upload storage logic yet.",
+      "expected_output": "The agent inspects the repository first, follows the closest maintained FastAPI feature, creates or proposes only the minimal route and schema structure, reuses existing auth/session/response patterns, and leaves upload fields, storage behavior, permission scope, and validation rules as TODOs."
+    },
+    {
+      "id": "existing-feature-update",
+      "prompt": "Extend the existing leave request module with a cancellation endpoint structure only. Do not implement cancellation rules yet.",
+      "expected_output": "The agent extends the existing leave module instead of creating a parallel module, reuses current router/auth/session/response conventions, adds only required files or edits, and leaves cancellation rules, permission scope, and persistence behavior as TODOs."
+    },
+    {
+      "id": "unknown-db-fields",
+      "prompt": "Prepare the structure for a shift swap request API and model, but the exact database fields are not confirmed yet.",
+      "expected_output": "The agent does not guess SQLAlchemy columns, relationships, constraints, indexes, defaults, request fields, or response fields. It adds only safe placeholders or TODOs, includes a migration reminder, and asks for confirmed schema requirements before generating real migration operations."
+    },
+    {
+      "id": "simple-endpoint-no-overbuild",
+      "prompt": "Add a simple health check endpoint for the mobile API.",
+      "expected_output": "The agent adds or proposes only the minimal route using the repository's existing router style. It does not create service, repository, model, schema, migration, permission, or test layers unless the inspected repository pattern clearly requires them."
+    },
+    {
+      "id": "background-job-structure",
+      "prompt": "Add the core structure for a background job that sends leave reminder notifications. Do not implement notification logic yet.",
+      "expected_output": "The agent inspects existing background job or task patterns, follows the existing queue/task style, adds only minimal job registration or placeholder files, reuses existing dependencies where available, and leaves scheduling, recipient rules, message content, and notification channel behavior as TODOs."
+    },
+    {
+      "id": "report-export-structure",
+      "prompt": "Prepare the FastAPI structure for an attendance summary export endpoint. Do not implement report calculation yet.",
+      "expected_output": "The agent follows an existing report/export endpoint pattern if available, creates only route/schema/service placeholders required by that pattern, does not invent report columns or calculations, and leaves export format, filters, permission scope, and calculation rules as TODOs."
+    },
+    {
+      "id": "fallback-no-repository-access",
+      "prompt": "Generate a FastAPI module structure for notification settings, but assume the repository cannot be inspected.",
+      "expected_output": "The agent clearly states that repository inspection was not possible and uses the fallback structure app/modules/<feature>/router.py, app/modules/<feature>/schemas.py, and tests/test_<feature>.py only if useful. It does not invent architecture-specific files."
+    },
+    {
+      "id": "should-not-change-auth",
+      "prompt": "Scaffold an admin-only endpoint for user device sessions. Do not implement business logic.",
+      "expected_output": "The agent reuses existing authentication, authorization, and scope dependencies if found. It does not hardcode admin checks, user IDs, role IDs, tenant IDs, company IDs, or change session/transaction behavior. Unknown permission rules remain as TODOs."
+    }
+  ]
+}

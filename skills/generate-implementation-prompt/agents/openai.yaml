@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Implementation Prompt"
+  short_description: "Turn references into coding-ready prompts"
+  default_prompt: "Use $generate-implementation-prompt to convert these references into one clean implementation prompt for a coding agent."

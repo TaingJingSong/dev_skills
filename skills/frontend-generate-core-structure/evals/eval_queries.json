@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Add the core structure for a purchase approval endpoint. Do not implement approval rules.",
+    "should_trigger": true
+  },
+  {
+    "query": "Scaffold a new FastAPI module for employee documents.",
+    "should_trigger": true
+  },
+  {
+    "query": "Create router and schema placeholders for overtime request summary API.",
+    "should_trigger": true
+  },
+  {
+    "query": "Prepare SQLAlchemy model structure for shift swap request, but fields are not confirmed.",
+    "should_trigger": true
+  },
+  {
+    "query": "Extend the existing leave module with a cancellation route.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add a Celery background job structure for attendance reminders.",
+    "should_trigger": true
+  },
+  {
+    "query": "Generate FastAPI report export structure for monthly attendance summary.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add test skeleton for the new mobile request summary endpoint.",
+    "should_trigger": true
+  },
+  {
+    "query": "Explain what FastAPI is.",
+    "should_trigger": false
+  },
+  {
+    "query": "Why am I getting a 500 Internal Server Error?",
+    "should_trigger": false
+  },
+  {
+    "query": "Design the business rules for leave cancellation approval.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a SQL query to count attendance records by employee.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fix this Python syntax error.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a Flutter screen for request summary.",
+    "should_trigger": false
+  },
+  {
+    "query": "Review this API response JSON and tell me if it is good.",
+    "should_trigger": false
+  },
+  {
+    "query": "Give me a PRD template for attendance export.",
+    "should_trigger": false
+  }
+]

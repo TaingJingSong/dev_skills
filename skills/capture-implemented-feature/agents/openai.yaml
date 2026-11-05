@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture Implemented Feature"
+  short_description: "Capture shipped backend contracts"
+  default_prompt: "Use $capture-implemented-feature to capture the backend contract that actually shipped for this feature."
