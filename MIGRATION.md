@@ -34,3 +34,11 @@
 - Existing project instruction files are never overwritten. Merge the rule template manually if your project already has `AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`.
 - Agent Skills do not constitute access control or automatic enforcement. For stronger guarantees, use the guard in a trusted CI job, path ownership, PR review, repository permissions and independent tests.
 - Tests validate the package tools and metadata, not live Claude/Codex/Gemini/Cursor execution or production behavior of the original framework-specific scripts.
+
+
+## Marketplace and CI integration (v2.0.0)
+
+- Restored the established `.agents/plugins/marketplace.json` from the original archived `origin/main` and preserved the marketplace name, plugin ID, GitHub URL and `source.ref: main`. Updated display metadata.
+- Restored `.codex-plugin/plugin.json` with the same `name` and `skills: ./skills/` entrypoint. Updated description, capabilities and version to `2.0.0`; this change becomes active only after a reviewed `main` release.
+- Added `.github/workflows/validate-skills.yml`, `.github/CODEOWNERS`, `AGENTS.md`, `scripts/validate_plugin.py`, `scripts/build_release.py`, `scripts/validate_release.py`, `tests/test_marketplace_release.py`, and `RELEASE_CHECKLIST.md`.
+- This distribution is prepared from the previous local v2 source and archived original Git metadata; live `dev` state could not be fetched. Review and resolve any divergence before applying.

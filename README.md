@@ -1,4 +1,4 @@
-# InnoTech Agent Engineering Skills — v2
+# InnoTech Agent Engineering Skills — v2.0.0 (marketplace-compatible)
 
 A **cross-agent, cross-language** collection of reusable engineering workflows. This bundle retains your FastAPI, Nuxt, Flutter, QA, postmortem, implementation prompting, documentation and handoff skills, adds five engineering guardrails, and consolidates all discoverable `SKILL.md` files under `skills/<name>/SKILL.md`.
 
@@ -7,7 +7,12 @@ The package follows the [Agent Skills format](https://agentskills.io/specificati
 ## Directory layout
 
 ```text
-innotech-plugin-v2/
+dev_skills/
+├── .agents/plugins/marketplace.json   # Existing Codex marketplace registration; ref=main
+├── .codex-plugin/plugin.json       # Existing Codex plugin entrypoint; skills=./skills/
+├── .github/workflows/validate-skills.yml
+├── .github/CODEOWNERS
+├── AGENTS.md                        # Repo-specific rules for contributors and agents
 ├── skills/
 │   ├── project-integrity-guardian/     # New: protected core and structure
 │   ├── project-context-analyzer/       # New: read-only architecture discovery
@@ -37,6 +42,34 @@ innotech-plugin-v2/
 ├── MIGRATION.md
 ├── requirements.txt
 └── requirements-google.txt
+```
+
+## Release channels: Codex marketplace and portable skills
+
+This repository supports **two independent installation methods**:
+
+- **Codex marketplace (stable/main):** The preserved `.agents/plugins/marketplace.json` points to `https://github.com/TaingJingSong/dev_skills` at `main`; `.codex-plugin/plugin.json` registers all canonical skills from `./skills/`. Keep the existing command: `codex plugin marketplace add TaingJingSong/dev_skills`, then follow your Codex client’s plugin install/enable flow. The exact marketplace UI and CLI may depend on your Codex version.
+- **Portable skills (dev or main):** Clone the selected branch and run `python scripts/install.py` as described below. This is the recommended way to test `dev` without releasing it through the marketplace.
+
+**Promotion rule:** Changes land on `dev` through a reviewed PR, pass CI and an agent smoke test, and are merged to `main` only after explicit release approval. Do not change the marketplace reference from `main` to `dev` during development. GitHub branch protection must be configured by a repo administrator: CI and CODEOWNERS alone do not require reviews.
+
+### Codex marketplace (stable branch)
+
+```bash
+codex plugin marketplace add TaingJingSong/dev_skills
+# Use your Codex version's plugin UI/commands to enable innotech-dev-plugin.
+```
+
+### Test development skills without touching main
+
+```bash
+git clone --branch dev https://github.com/TaingJingSong/dev_skills.git
+cd dev_skills
+python -m pip install -r requirements.txt
+python scripts/validate_skills.py
+python scripts/validate_plugin.py
+python -m unittest discover -s tests -v
+python scripts/install.py --agent shared --scope project --project-root /path/to/test-project --dry-run --rules
 ```
 
 ## Installation
@@ -146,8 +179,21 @@ It blocks changes outside `allowed_paths`, protected files even when also allowl
 
 ```bash
 python scripts/validate_skills.py
+python scripts/validate_plugin.py
 python -m unittest discover -s tests -v
-python -m compileall -q scripts skills
+python -m compileall -q scripts tests
+python scripts/build_release.py --output /tmp/innotech-agent-skills.zip
+python scripts/validate_release.py /tmp/innotech-agent-skills.zip
 ```
 
 The unit tests are package behavior smoke tests; they do not simulate every coding agent, every repository/framework, or a production deployment. See `MIGRATION.md` for exact changes, intentional exclusions and installation cautions.
+
+## CI, ownership and release procedure
+
+Every push and PR to `dev` or `main` runs `.github/workflows/validate-skills.yml`: validates all 16 skill manifests, checks the marketplace link and entrypoint, runs offline unit tests on Python 3.10 and 3.12, verifies portable installation paths, and checks the resulting distribution ZIP for known sensitive filenames and traversal paths. This is **not** a real Codex/Claude/Gemini/Cursor runtime execution test.
+
+For safe promotion, configure a GitHub ruleset protecting `main`: require PRs, at least one human approval, Code Owner review, passing `Validate Agent Skills / Python 3.10` and `Validate Agent Skills / Python 3.12` checks, and prevent force pushes. Also protect `dev` using appropriate review and CI requirements. Do **not** grant the coding agent permissions to bypass these rules.
+
+Review `RELEASE_CHECKLIST.md` before merging to `main` or tagging a release. Build a local safe ZIP with `python scripts/build_release.py --output /tmp/innotech-agent-skills.zip` and validate with `python scripts/validate_release.py /tmp/innotech-agent-skills.zip`.
+
+Avoid adding real credentials or `.env` files. If secrets were ever committed, rotate/revoke them and consult a repository administrator about historical cleanup; `.gitignore` and safe ZIPs do not remove past exposure.
